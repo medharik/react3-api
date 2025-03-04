@@ -18,7 +18,6 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [mc, setMc] = useState("");
   const [produitsAffiche, setProduitsAffiche] = useState([]);
-
   const reducerNotice=(state,action)=>{
 switch (action.type) {
   case 'SUPPRIMER':
@@ -33,75 +32,33 @@ switch (action.type) {
 }
   }
   const [notice, dispatchNotice] = useReducer(reducerNotice, {text:'liste des produits',color:'primary'});
- const STATE_INIT={
-  produits:[],
-  produit:init,
-  load:false,
-  produitsAffiche:[],
-  notice: {text:'liste des produits',color:'primary'}
- };
- const reducer = (state,action)=>{
-switch (action.type) {
-  case "ajouter":
-return {...state, produits:[...produits,action.payload.produit],notice: {text:'produits ajoutes avec succes',color:'info'}};
-  
-  case "DELETE":
-console.log('delete payload',action.payload.id);
-    return {...state,produits:state.produits.filter(p=> p.id!==action.payload.id), produitsAffiche: state.produits.filter(p=> p.id!==action.payload.id),notice:{text:'produit supprimeeee avec succes',color:'danger'}};
-    
-  case "modifier":
-    return {...state,produitsAffiche:state.produits.map(p=>p.id===action.payload.produit.id? action.payload.produit:p),
-      notice:{text:'produit updated avec succes',color:'warning'},
-      produit:action.payload.init
-    }
-    case "edit":
-      return {...state,produit:action.payload.produit}
-  case "init":
-    
-  return {...state,produits: action.payload.produits,produitsAffiche:action.payload.produits,notice:{text:'liste des produits',color:'info'}};
-  default :
-  return state;
-
-
-}
-
- }
- const [state_produits, dispatch_produits] = useReducer(reducer,STATE_INIT);
- 
   const ajouter = (e) => {
     e.preventDefault();
     ajouterApi(produit).then((data) => {
-    //  setProduits([...produits, data]);
-    //  setProduit(init);
-    //  dispatchNotice({type:"AJOUTER",payload:produit.libelle})
-    dispatch_produits({type: "ajouter", payload: { produit: data } });
+      setProduits([...produits, data]);
+      setProduit(init);
+      dispatchNotice({type:"AJOUTER",payload:produit.libelle})
     });
     libelleRef.current.focus();
     console.log("current libelle ", libelleRef.current.value);
   };
   const supprimer = (id) => {
     if (confirm("supprimer?")) {
-  //    setProduits(produits.filter((p) => p.id !== id));
+      setProduits(produits.filter((p) => p.id !== id));
       // setNotice({ text: "produit supprime avec succes", color: "danger" });
-
-      dispatch_produits({ type: "DELETE", payload: { id } });
+      dispatchNotice({type:"SUPPRIMER"});
       (async () => await supprimerApi(id))();
-     // dispatchNotice({type:"SUPPRIMER"});
-     
     }
   };
-
   const editer = (produit) => {
-
-dispatch_produits({ type: "edit", payload: { produit } });
+    setProduit(produit);
   };
   const modifier = (e) => {
     e.preventDefault();
-   // setProduits(produits.map((p) => (p.id === produit.id ? produit : p)));
+    setProduits(produits.map((p) => (p.id === produit.id ? produit : p)));
     modifierApi(produit);
-    dispatch_produits({type:'modifier',payload:{produit,init:init}});
-    //setProduit(init);
-   //dispatchNotice({type:"MODIFIER"})
+    setProduit(init);
+   dispatchNotice({type:"MODIFIER"})
   };
   const consulter = () => {};
   useEffect(() => {
@@ -111,9 +68,8 @@ dispatch_produits({ type: "edit", payload: { produit } });
       setLoading(true);
       const data = await all();
       setLoading(false);
-    //  setProduits(data);
-      //setProduitsAffiche(data);
-      dispatch_produits({ type: "init", payload: {produits:data} });
+      setProduits(data);
+      setProduitsAffiche(data);
     };
     fetchData();
   }, []);
@@ -136,12 +92,12 @@ dispatch_produits({ type: "edit", payload: { produit } });
         {produit.id && (
           <button onClick={() => setProduit(init)}>Nouveau</button>
         )}
-        <h2 className={`alert alert-${state_produits.notice.color}`}> {state_produits.notice.text}</h2>
+        <h2 className={`alert alert-${notice.color}`}> {notice.text}</h2>
 
         <Form
           libelleRef={libelleRef}
-          produit={state_produits.produit}
-          setProduit={(p) => dispatch_produits({ type: "edit", payload: { produit: p } })}
+          produit={produit}
+          setProduit={setProduit}
           ajouter={ajouter}
           modifier={modifier}
         />
@@ -156,7 +112,7 @@ dispatch_produits({ type: "edit", payload: { produit } });
         {mc}
         <Liste
           supprimer={supprimer}
-          produits={state_produits.produitsAffiche}
+          produits={produitsAffiche}
           editer={editer}
           consulter={consulter}
         />
