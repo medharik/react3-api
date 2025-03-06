@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const URL = "https://6679da7d18a459f63951a26a.mockapi.io/produits";
+// const URL = "https://6679da7d18a459f63951a26a.mockapi.io/produits";
+const URL = "http://127.0.0.1:8000/api/produits";
+//WEB SERVICE  PROVIDER  (API)
 
 export const all = async () => {
   try {
@@ -47,3 +49,6 @@ export const find = async (id) => {
     console.error("erreur find :", error);
   }
 };
+
+
+

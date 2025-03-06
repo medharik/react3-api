@@ -18,47 +18,60 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [mc, setMc] = useState("");
   const [produitsAffiche, setProduitsAffiche] = useState([]);
-  const reducerNotice=(state,action)=>{
-switch (action.type) {
-  case 'SUPPRIMER':
-    return {text:'suppression ok',color:'danger'}
-  case 'MODIFIER':
-    return {text:'modification ok',color:'warning'}
-  case 'AJOUTER':
-    return {text:action.payload+' ajoute avec succes',color:'info'}
 
+  const reducer_notice=(state,action)=>{
+switch(action.type){
+case "AJOUT":
+  return {texte:action.payload+' a ete ajoute avec succes',color:'success'} ;
+case "NEW":
+  return {texte:"Nouveau produit",color:'success'} ;
+case "MAJ":
+  return {texte:action.payload+' a ete modifie avec succes',color:'warning'} ;
+case "SUPPRESSION":
+  return {texte:'le produit ayant id ='+action.payload+' a ete SUPPRIME avec succes',color:'danger'} ;
+case "EDIT":
+  return {...state, texte:'EDITION DU PRODUIT , id= '+action.payload.id+' libelle = '+action.payload.libelle} ;
   default:
     return state;
+
+
+
 }
   }
-  const [notice, dispatchNotice] = useReducer(reducerNotice, {text:'liste des produits',color:'primary'});
+  const [notice, dispatch_notice] = useReducer(reducer_notice,{texte:'liste des produits',color:'primary'} );
+
+  // notice (old) + dispatch action (ADD,DEDLETE) => la fonctio reduce se lance et nous retourne le new notice
+
   const ajouter = (e) => {
     e.preventDefault();
     ajouterApi(produit).then((data) => {
       setProduits([...produits, data]);
       setProduit(init);
-      dispatchNotice({type:"AJOUTER",payload:produit.libelle})
+
     });
     libelleRef.current.focus();
     console.log("current libelle ", libelleRef.current.value);
+    dispatch_notice({type:"AJOUT",payload:produit.libelle});
   };
   const supprimer = (id) => {
     if (confirm("supprimer?")) {
       setProduits(produits.filter((p) => p.id !== id));
-      // setNotice({ text: "produit supprime avec succes", color: "danger" });
-      dispatchNotice({type:"SUPPRIMER"});
+     
       (async () => await supprimerApi(id))();
     }
+    dispatch_notice({type:"SUPPRESSION",payload:id})
   };
   const editer = (produit) => {
     setProduit(produit);
+    dispatch_notice({type:"EDIT",payload:{id:produit.id,libelle:produit.libelle}});
   };
   const modifier = (e) => {
     e.preventDefault();
     setProduits(produits.map((p) => (p.id === produit.id ? produit : p)));
     modifierApi(produit);
     setProduit(init);
-   dispatchNotice({type:"MODIFIER"})
+  //  dispatchNotice({type:"MODIFIER"})
+  dispatch_notice({type:"MAJ",payload:produit.libelle});
   };
   const consulter = () => {};
   useEffect(() => {
@@ -70,8 +83,10 @@ switch (action.type) {
       setLoading(false);
       setProduits(data);
       setProduitsAffiche(data);
+
     };
     fetchData();
+    // dispatch_notice()
   }, []);
   useEffect(() => {
     setProduitsAffiche(
@@ -89,11 +104,11 @@ switch (action.type) {
   return (
     <>
       <div className="container text-center bg-light">
+      {/* <div className={`alert alert-${notice.color}`}>{notice.texte}</div> */}
         {produit.id && (
-          <button onClick={() => setProduit(init)}>Nouveau</button>
+          <button onClick={() =>{setProduit(init);dispatch_notice({type:"NEW"})}}>Nouveau</button>
         )}
-        <h2 className={`alert alert-${notice.color}`}> {notice.text}</h2>
-
+<div className={'alert alert-'+notice.color}>{notice.texte}</div>
         <Form
           libelleRef={libelleRef}
           produit={produit}
