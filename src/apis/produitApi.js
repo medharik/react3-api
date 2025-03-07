@@ -1,7 +1,8 @@
 import axios from "axios";
 
 // const URL = "https://6679da7d18a459f63951a26a.mockapi.io/produits";
-const URL = "http://127.0.0.1:8000/api/produits";
+export const URL = "http://127.0.0.1:8000/api/produits";
+export const URL_BASE_IMAGE = "http://127.0.0.1:8000/storage";
 //WEB SERVICE  PROVIDER  (API)
 
 export const all = async () => {
@@ -15,6 +16,7 @@ export const all = async () => {
 };
 export const supprimerApi = async (id) => {
   try {
+
   axios.delete(URL + "/" + id).then(r=> console.log("delete", r));
    
     
@@ -24,7 +26,18 @@ export const supprimerApi = async (id) => {
 };
 export const ajouterApi = async (produit) => {
   try {
-    const resp = await axios.post(URL, produit);
+    const formData=new FormData();
+    formData.append("libelle",produit.libelle);
+    formData.append("prix",produit.prix);
+   
+      formData.append("image", produit.image);
+      
+      console.log('formdata',[...formData.entries()]);
+    const resp = await axios.post(URL, formData,{
+      headers:{
+        "Content-Type": "multipart/form-data",
+      }
+    });
     console.log("add", resp);
     return resp.data;
   } catch (error) {
