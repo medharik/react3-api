@@ -10,6 +10,7 @@ const Liste = ({produits,supprimer,editer,consulter}) => {
           <th>id</th>
           <th>libelle</th>
           <th>prix</th>
+          <th>image</th>
           <th>actions</th>
         </tr>
       </thead>
