@@ -8,6 +8,7 @@ const Liste = ({produits,supprimer,editer,consulter}) => {
       <thead>
         <tr>
           <th>id</th>
+          <th>image</th>
           <th>libelle</th>
           <th>prix</th>
           <th>actions</th>

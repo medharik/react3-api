@@ -11,8 +11,10 @@ import Liste from "./components/Liste";
 
 function App() {
   const [produits, setProduits] = useState([]);
+  const [errors, setErrors] = useState('')
   const libelleRef = useRef(null);
-  const init = { id: "", libelle: "", prix: "" };
+  const [image, setImage] = useState('')
+  const init = { id: "", libelle: "", prix: "",image:"" };
   const [produit, setProduit] = useState(init);
   // const [notice, setNotice] = useState({ text: "", color: "" });
   const [loading, setLoading] = useState(false);
@@ -44,11 +46,27 @@ case "EDIT":
 
   const ajouter = (e) => {
     e.preventDefault();
-    ajouterApi(produit).then((data) => {
-      setProduits([...produits, data]);
-      setProduit(init);
-
-    });
+   const fetchData=async()=>{
+    try {
+      
+      const data= await ajouterApi(produit);
+       setProduits([...produits, data]);
+       setProduit(init);
+     } catch (error) {
+      if (error.response && error.response.status === 422) {
+        // setErrors(error.response.data.errors); // ✅ Capture Laravel validation errors
+        console.error("Erreur d'ajout:", error);
+      } else {
+        console.error("Erreur d'ajout:", error);
+      }
+       console.log('errors'+error.response.data.message);
+      setErrors(error.response.data.message)
+       
+     }
+   }
+   fetchData();
+    
+    
     libelleRef.current.focus();
     console.log("current libelle ", libelleRef.current.value);
     dispatch_notice({type:"AJOUT",payload:produit.libelle});
@@ -115,7 +133,12 @@ case "EDIT":
           setProduit={setProduit}
           ajouter={ajouter}
           modifier={modifier}
+         image={image}
+         setImage={setImage}
         />
+        
+        {errors}
+        
         {loading ? "Chargement en cours" : ""}
         <input
           className="form-control border my-3 w-25 mx-auto"
