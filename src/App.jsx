@@ -1,4 +1,4 @@
-import "bootstrap/dist/css/bootstrap.min.css";
+// import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useReducer, useRef, useState } from "react";
 import {
   ajouterApi,
@@ -8,6 +8,8 @@ import {
 } from "./apis/produitApi";
 import Form from "./components/Form";
 import Liste from "./components/Liste";
+import { useTheme } from "./components/ThemeProvider";
+
 
 function App() {
   const [produits, setProduits] = useState([]);
@@ -100,9 +102,16 @@ case "EDIT":
       )
     );
   }, [mc, produits]);
-
+const {theme,setTheme}=useTheme();
   return (
     <>
+   <nav>
+   <div className=" d-flex justify-content-end p-1"><button onClick={()=>setTheme(theme==='primary'? 'dark':'primary')}>
+      
+      { theme==='primary'?  <i class="bi bi-lightbulb-fill"></i>:<i class="bi bi-lightbulb"></i>
+}
+    </button></div>
+   </nav>
       <div className="container text-center bg-light">
       {/* <div className={`alert alert-${notice.color}`}>{notice.texte}</div> */}
         {produit.id && (

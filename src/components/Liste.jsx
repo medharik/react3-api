@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import Ligne from "./Ligne";
-{/* <Liste supprimer={supprimer} produits={produits} editer={editer} consulter={consulter}/> */}
+import {  ThemeContexte, useTheme } from "./ThemeProvider";
 
-const Liste = ({produits,supprimer,editer,consulter}) => {
+const Liste = ({ produits, supprimer, editer, consulter }) => {
+const {theme,setTheme}=useTheme();
+  
   return (
-    <table className="table table-stripped">
+    <>
+    
+    <table className={`table table-stripped`}>
       <thead>
         <tr>
           <th>id</th>
@@ -14,11 +18,12 @@ const Liste = ({produits,supprimer,editer,consulter}) => {
         </tr>
       </thead>
       <tbody>
-        {
-            produits.map(p =><Ligne key={p.id} produit={p} supprimer={supprimer}  editer={editer} consulter={consulter}/>)
-        }
+        {produits.map((p) => (
+          <Ligne key={p.id} produit={p} supprimer={supprimer} editer={editer} consulter={consulter} />
+        ))}
       </tbody>
     </table>
+    </>
   );
 };
 
