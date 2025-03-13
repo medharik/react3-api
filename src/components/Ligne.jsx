@@ -1,10 +1,12 @@
 import React from 'react'
+import { URL_IMAGE } from '../apis/produitApi';
 
 const Ligne = ({produit,supprimer,editer,consulter}) => {
-    const {id,libelle,prix}=produit;
+    const {id,libelle,prix,image}=produit;
   return (
     <tr>
         <td>{id}</td>
+        <td>{image && <img src={`${URL_IMAGE}/${image}`} alt="image produit" width={150}/>}</td>
         <td>{libelle}</td>
         <td>{prix}</td>
             <td>         <div className="btn-group">

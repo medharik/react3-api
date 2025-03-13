@@ -9,13 +9,13 @@ import {
 import Form from "./components/Form";
 import Liste from "./components/Liste";
 import { useTheme } from "./components/ThemeProvider";
-
+import { useProduits } from "./components/ProduitProvider";
 
 function App() {
+  const {produit,setProduit,init}=useProduits();
   const [produits, setProduits] = useState([]);
   const libelleRef = useRef(null);
-  const init = { id: "", libelle: "", prix: "" };
-  const [produit, setProduit] = useState(init);
+  
   // const [notice, setNotice] = useState({ text: "", color: "" });
   const [loading, setLoading] = useState(false);
   const [mc, setMc] = useState("");
@@ -49,6 +49,7 @@ case "EDIT":
     ajouterApi(produit).then((data) => {
       setProduits([...produits, data]);
       setProduit(init);
+      
 
     });
     libelleRef.current.focus();
@@ -108,7 +109,7 @@ const {theme,setTheme}=useTheme();
    <nav>
    <div className=" d-flex justify-content-end p-1"><button onClick={()=>setTheme(theme==='primary'? 'dark':'primary')}>
       
-      { theme==='primary'?  <i class="bi bi-lightbulb-fill"></i>:<i class="bi bi-lightbulb"></i>
+      { theme==='primary'?  <i className="bi bi-lightbulb-fill"></i>:<i className="bi bi-lightbulb"></i>
 }
     </button></div>
    </nav>
