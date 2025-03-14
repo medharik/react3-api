@@ -1,10 +1,19 @@
 import React from 'react'
+import { URL_IMAGE } from '../apis/produitApi';
 
-const Ligne = ({produit,supprimer,editer,consulter}) => {
-    const {id,libelle,prix}=produit;
+const Ligne = ({produit,supprimer,editer}) => {
+    const {id,libelle,prix,image}=produit;
   return (
     <tr>
         <td>{id}</td>
+        <td>
+          {
+            image?   <img src={`${URL_IMAGE}/${image}`} width="150" /> : <span className='badge badge-danger bg-danger'>Pas d'iamge</span>
+
+          }
+    
+
+        </td>
         <td>{libelle}</td>
         <td>{prix}</td>
             <td>         <div className="btn-group">

@@ -15,7 +15,7 @@ const Liste = ({produits,supprimer,editer,consulter}) => {
       </thead>
       <tbody>
         {
-            produits.map(p =><Ligne key={p.id} produit={p} supprimer={supprimer}  editer={editer} consulter={consulter}/>)
+            produits.map(p => <Ligne key={p.id} produit={p} supprimer={supprimer}  editer={editer} consulter={consulter}/> )
         }
       </tbody>
     </table>
