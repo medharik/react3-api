@@ -7,7 +7,7 @@ export const ThemeContexte=createContext();
 export const ThemeProvider=({children})=>{
  const [theme, setTheme] = useState('primary');
  const toggleTheme=()=>{
-  setTheme(theme==='primary'?'secondary':'primary');
+  setTheme(theme==='primary'?'dark':'primary');
  }
  useEffect(() => {
    const linktheme=document.getElementById('link-theme');
@@ -17,6 +17,7 @@ export const ThemeProvider=({children})=>{
      linktheme.href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.3.3/litera/bootstrap.min.css";
  }
    
+ console.log('theme',theme,linktheme.href)
  }, [theme])
  
     return (

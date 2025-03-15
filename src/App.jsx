@@ -135,7 +135,7 @@ const [toggleListeGrid, setToggleListeGrid] = useState('GRID');
   return (
     <>
     <div className="d-flex justify-content-end">
-      <button onClick={()=>setTheme(theme==='dark'? 'light':'dark')} >{theme}</button>
+      <button onClick={()=>setTheme(theme==='dark'? 'primary':'dark')} >{theme}</button>
     </div>
       <div className={"container text-center bg-"+theme}>
       {/* <div className={`alert alert-${notice.color}`}>{notice.texte}</div> */}
