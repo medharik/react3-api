@@ -13,7 +13,7 @@ import { Grid } from "./components/Grid";
 import { useTheme } from "./components/ThemeProvider";
 
 function App() {
-  const {theme,toggleTheme,setTheme}=useTheme();
+  const {theme,setTheme}=useTheme();
   const init = { id: "", libelle: "", prix: '',image:'' };
   const [produits, setProduits] = useState([]);
   const libelleRef = useRef(null);
@@ -131,7 +131,7 @@ case "EDIT":
       )
     );
   }, [mc, produits]);
-const [toggleListeGrid, oggleListeGrid] = useState('GRID');
+const [toggleListeGrid, setToggleListeGrid] = useState('GRID');
 
   return (
     <>
