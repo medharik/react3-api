@@ -1,8 +1,9 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useReducer, useRef, useState } from "react";
-import { ajouterApi, all, modifierApi, supprimerApi, URL_BASE_IMAGE } from "./apis/produitApi";
+import {  all, modifierApi, supprimerApi, URL, URL_BASE_IMAGE } from "./apis/produitApi";
 import Form from "./components/Form";
 import Liste from "./components/Liste";
+import axios from "axios";
 
 function App() {
   const [produits, setProduits] = useState([]);
@@ -38,6 +39,14 @@ const imageRef = useRef('');
             " a ete SUPPRIME avec succes",
           color: "danger",
         };
+      case "ERROR":
+        return {
+          texte:
+            "Erreur =" +
+            action.payload 
+           ,
+          color: "danger",
+        };
       case "EDIT":
         return {
           ...state,
@@ -47,6 +56,7 @@ const imageRef = useRef('');
             " libelle = " +
             action.payload.libelle,
         };
+
       default:
         return state;
     }
@@ -60,12 +70,37 @@ const imageRef = useRef('');
 
   const ajouter = (e) => {
     e.preventDefault();
-    const selectedImage = imageRef.current?.files[0] || null;
-    const formProduit={...produit,image:selectedImage}
-    ajouterApi(formProduit).then((data) => {
-      setProduits([...produits, data]);
+    // const selectedImage = imageRef.current?.files[0] || null;
+    // const formProduit={...produit,image:selectedImage}
+
+     const ajouterApi2 = async () => {
+      try {
+        const formData=new FormData();
+        formData.append("libelle",produit.libelle);
+        formData.append("prix",produit.prix);
+       
+          formData.append("image", produit.image);
+          
+          console.log('formdata',[...formData.entries()]);
+        const resp = await axios.post(URL, formData,{
+          headers:{
+            "Content-Type": "multipart/form-data",
+          }
+        });
+              setProduits([...produits, resp.data]);
       setProduit(init);
-    });
+        console.log("add", resp);
+      
+      } catch (error) {
+        dispatch_notice({type:"ERROR",payload: error.response.data.message});
+        console.error("erreur add :", error);
+      }
+    };
+    ajouterApi2();
+    // ajouterApi(formProduit).then((data) => {
+    //   setProduits([...produits, data]);
+    //   setProduit(init);
+    // });
     libelleRef.current.focus();
     console.log("current libelle ", libelleRef.current.value);
     dispatch_notice({ type: "AJOUT", payload: produit.libelle });

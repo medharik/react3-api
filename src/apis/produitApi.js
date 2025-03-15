@@ -50,7 +50,7 @@ export const ajouterApi = async (produit) => {
     console.log("add", resp);
     return resp.data;
   } catch (error) {
-    console.error("erreur add :", error);
+    console.error("erreur add :", error.response.data.message);
   }
 };
 export const modifierApi = async (produit) => {
