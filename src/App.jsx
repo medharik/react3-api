@@ -1,18 +1,20 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useReducer, useRef, useState } from "react";
 import {
-  ajouterApi,
   all,
   modifierApi,
-  supprimerApi
+  supprimerApi,
+  URL
 } from "./apis/produitApi";
 import Form from "./components/Form";
 import Liste from "./components/Liste";
+import axios from "axios";
+import { Grid } from "./components/Grid";
 
 function App() {
+  const init = { id: "", libelle: "", prix: '',image:'' };
   const [produits, setProduits] = useState([]);
   const libelleRef = useRef(null);
-  const init = { id: "", libelle: "", prix: "" };
   const [produit, setProduit] = useState(init);
   // const [notice, setNotice] = useState({ text: "", color: "" });
   const [loading, setLoading] = useState(false);
@@ -27,6 +29,8 @@ case "NEW":
   return {texte:"Nouveau produit",color:'success'} ;
 case "MAJ":
   return {texte:action.payload+' a ete modifie avec succes',color:'warning'} ;
+case "ERROR":
+  return {texte:'Erreur : '+action.payload,color:'danger'} ;
 case "SUPPRESSION":
   return {texte:'le produit ayant id ='+action.payload+' a ete SUPPRIME avec succes',color:'danger'} ;
 case "EDIT":
@@ -44,14 +48,39 @@ case "EDIT":
 
   const ajouter = (e) => {
     e.preventDefault();
-    ajouterApi(produit).then((data) => {
-      setProduits([...produits, data]);
-      setProduit(init);
+    const ajouterApi = async () => {
+      try {
+        const form=new FormData();
+        form.append('libelle',produit.libelle); 
+        form.append('prix',produit.prix); 
+        if(produit.image)      form.append('image',produit.image); 
+        const resp = await axios.post(URL, form,{
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }
+    
+        });
+        console.log('status response ',resp.status)
+        setProduits([...produits, resp.data]);
+        setProduit(init);
+        console.log("current libelle ", libelleRef.current.value);
+        dispatch_notice({type:"AJOUT",payload:produit.libelle});
+        console.log("add", resp);
+        return resp.data;
+      } catch (error) {
+        console.error("erreur add :", error);
+        if(error.response.data.message){
+          dispatch_notice({type:"ERROR",payload:error.response.data.message})
+        }
+      }
+    };
+    ajouterApi();
+    // ajouterApi(produit).then((data) => {
+   
 
-    });
+    // });
     libelleRef.current.focus();
-    console.log("current libelle ", libelleRef.current.value);
-    dispatch_notice({type:"AJOUT",payload:produit.libelle});
+   
   };
   const supprimer = (id) => {
     if (confirm("supprimer?")) {
@@ -100,7 +129,7 @@ case "EDIT":
       )
     );
   }, [mc, produits]);
-
+const [toggleListeGrid, setToggleListeGrid] = useState('GRID');
   return (
     <>
       <div className="container text-center bg-light">
@@ -125,12 +154,22 @@ case "EDIT":
           placeholder="rechercher"
         />
         {mc}
+        <button onClick={()=> (toggleListeGrid==='LISTE')? setToggleListeGrid('GRID'):setToggleListeGrid('LISTE')}>{toggleListeGrid==='LISTE'? 'GRID':'LISTE'}</button>
+
+{
+  toggleListeGrid==='LISTE'?
+
         <Liste
           supprimer={supprimer}
           produits={produitsAffiche}
           editer={editer}
           consulter={consulter}
-        />
+        /> :
+        <Grid  supprimer={supprimer}
+          produits={produitsAffiche}
+          editer={editer}
+          consulter={consulter}/>
+}
       </div>
     </>
   );
