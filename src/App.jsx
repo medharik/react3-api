@@ -1,4 +1,4 @@
-import "bootstrap/dist/css/bootstrap.min.css";
+// import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useReducer, useRef, useState } from "react";
 import {
   all,
@@ -10,8 +10,10 @@ import Form from "./components/Form";
 import Liste from "./components/Liste";
 import axios from "axios";
 import { Grid } from "./components/Grid";
+import { useTheme } from "./components/ThemeProvider";
 
 function App() {
+  const {theme,toggleTheme}=useTheme();
   const init = { id: "", libelle: "", prix: '',image:'' };
   const [produits, setProduits] = useState([]);
   const libelleRef = useRef(null);
@@ -130,9 +132,13 @@ case "EDIT":
     );
   }, [mc, produits]);
 const [toggleListeGrid, setToggleListeGrid] = useState('GRID');
+
   return (
     <>
-      <div className="container text-center bg-light">
+    <div className="d-flex justify-content-end">
+      <button onClick={toggleTheme} >{theme}</button>
+    </div>
+      <div className={"container text-center bg-"+theme}>
       {/* <div className={`alert alert-${notice.color}`}>{notice.texte}</div> */}
         {produit.id && (
           <button onClick={() =>{setProduit(init);dispatch_notice({type:"NEW"})}}>Nouveau</button>
