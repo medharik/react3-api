@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-export const ThemeContext = createContext();
+ const ThemeContext = createContext();
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState("dark");
 
@@ -13,6 +13,7 @@ export const ThemeProvider = ({ children }) => {
  } else {
       linktheme.href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.3.3/litera/bootstrap.min.css";
   }
+  console.log('current theme',linktheme)
     
   }, [theme])
 
