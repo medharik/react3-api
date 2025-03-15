@@ -6,6 +6,9 @@ export const ThemeContexte=createContext();
 
 export const ThemeProvider=({children})=>{
  const [theme, setTheme] = useState('primary');
+ const toggleTheme=()=>{
+  setTheme(theme==='primary'?'secondary':'primary');
+ }
  useEffect(() => {
    const linktheme=document.getElementById('link-theme');
  if (theme==='dark') {
@@ -17,7 +20,7 @@ export const ThemeProvider=({children})=>{
  }, [theme])
  
     return (
-        <ThemeContexte.Provider value={{theme,setTheme}}>
+        <ThemeContexte.Provider value={{theme,setTheme,toggleTheme}}>
             {children}
         </ThemeContexte.Provider>
     );
