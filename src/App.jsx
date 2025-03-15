@@ -13,7 +13,7 @@ import { Grid } from "./components/Grid";
 import { useTheme } from "./components/ThemeProvider";
 
 function App() {
-  const {theme,toggleTheme}=useTheme();
+  const {theme,toggleTheme,setTheme}=useTheme();
   const init = { id: "", libelle: "", prix: '',image:'' };
   const [produits, setProduits] = useState([]);
   const libelleRef = useRef(null);
@@ -131,12 +131,12 @@ case "EDIT":
       )
     );
   }, [mc, produits]);
-const [toggleListeGrid, setToggleListeGrid] = useState('GRID');
+const [toggleListeGrid, oggleListeGrid] = useState('GRID');
 
   return (
     <>
     <div className="d-flex justify-content-end">
-      <button onClick={toggleTheme} >{theme}</button>
+      <button onClick={()=>setTheme(theme==='dark'? 'light':'dark')} >{theme}</button>
     </div>
       <div className={"container text-center bg-"+theme}>
       {/* <div className={`alert alert-${notice.color}`}>{notice.texte}</div> */}
