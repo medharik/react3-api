@@ -2,8 +2,18 @@ import React from "react";
 import Ligne from "./Ligne";
 {/* <Liste supprimer={supprimer} produits={produits} editer={editer} consulter={consulter}/> */}
 
-const Liste = ({produits,supprimer,editer,consulter}) => {
+const Liste = ({produits,supprimer,editer,consulter,loading,mc,setMc}) => {
   return (
+    <>
+    {loading ? "Chargement en cours" : ""}
+    <input
+      className="form-control border my-3 w-25 mx-auto"
+      type="search"
+      value={mc}
+      onChange={(e) => setMc(e.target.value)}
+      placeholder="rechercher"
+      />
+    {mc}
     <table className="table table-stripped">
       <thead>
         <tr>
@@ -15,10 +25,11 @@ const Liste = ({produits,supprimer,editer,consulter}) => {
       </thead>
       <tbody>
         {
-            produits.map(p => <Ligne key={p.id} produit={p} supprimer={supprimer}  editer={editer} consulter={consulter}/> )
+          produits.map(p => <Ligne key={p.id} produit={p} supprimer={supprimer}  editer={editer} consulter={consulter}/> )
         }
       </tbody>
     </table>
+        </>
   );
 };
 

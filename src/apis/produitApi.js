@@ -46,13 +46,36 @@ export const ajouterApi = async (produit) => {
 };
 export const modifierApi = async (produit) => {
   try {
-    const resp = await axios.put(URL + "/" + produit.id, produit);
-    console.log("add", resp);
+    console.log('Produit à modifier :', produit);
+
+    const form = new FormData();
+    form.append('libelle', produit.libelle);
+    form.append('_method', 'PUT'); // Forcer Laravel à interpréter la requête comme PUT
+
+    form.append('prix', produit.prix);
+    if (produit.image instanceof File) { 
+      form.append('image', produit.image);
+    }
+
+    for (let pair of form.entries()) {
+      console.log(pair[0] + ', ' + pair[1]);
+    }
+    console.log('FormData envoyé :', form);
+
+    const resp = await axios.post(`${URL}/${produit.id}`, form, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Accept': 'application/json',
+      },
+    });
+
+    console.log("Mise à jour réussie :", resp.data);
     return resp.data;
   } catch (error) {
-    console.error("erreur modifier :", error);
+    console.error("Erreur lors de la modification :", error);
   }
 };
+
 export const find = async (id) => {
   try {
     const resp = await axios.get(URL + "/" + id);
