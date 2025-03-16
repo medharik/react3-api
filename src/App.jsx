@@ -1,10 +1,11 @@
+import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useReducer, useRef, useState } from "react";
 import {
-  ajouterApi,
   all,
   modifierApi,
-  supprimerApi
+  supprimerApi,
+  URL
 } from "./apis/produitApi";
 import Form from "./components/Form";
 import Liste from "./components/Liste";
@@ -29,6 +30,8 @@ case "MAJ":
   return {texte:action.payload+' a ete modifie avec succes',color:'warning'} ;
 case "SUPPRESSION":
   return {texte:'le produit ayant id ='+action.payload+' a ete SUPPRIME avec succes',color:'danger'} ;
+case "ERROR":
+  return {texte:action.payload, color:'danger'} ;
 case "EDIT":
   return {...state, texte:'EDITION DU PRODUIT , id= '+action.payload.id+' libelle = '+action.payload.libelle} ;
   default:
@@ -44,14 +47,35 @@ case "EDIT":
 
   const ajouter = (e) => {
     e.preventDefault();
-    ajouterApi(produit).then((data) => {
-      setProduits([...produits, data]);
+    const ajouterApi = async (produit) => {
+      try {
+        const form=new FormData();
+        form.append('libelle',produit.libelle); 
+        form.append('prix',produit.prix); 
+        if(produit.image)      form.append('image',produit.image); 
+            
+        const resp = await axios.post(URL, form,{
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }
+    
+        });
+        console.log("add", resp);
+        setProduits([...produits, resp.data]);
       setProduit(init);
+      dispatch_notice({type:"AJOUT",payload:produit.libelle});
+      } catch (error) {
+        dispatch_notice({type:'ERROR',payload:error.response.data.message});
+        console.error("erreur add :", error);
+      }
+    };
+    ajouterApi(produit);
+    
+      
 
-    });
+    ;
     libelleRef.current.focus();
     console.log("current libelle ", libelleRef.current.value);
-    dispatch_notice({type:"AJOUT",payload:produit.libelle});
   };
   const supprimer = (id) => {
     if (confirm("supprimer?")) {
