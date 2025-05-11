@@ -18,15 +18,12 @@ const {theme,setTheme}=useTheme();
         </tr>
       </thead>
       <tbody>
-<<<<<<< HEAD
         {
             produits.map(p => <Ligne key={p.id} produit={p} supprimer={supprimer}  editer={editer} consulter={consulter}/> )
         }
-=======
         {produits.map((p) => (
           <Ligne key={p.id} produit={p} supprimer={supprimer} editer={editer} consulter={consulter} />
         ))}
->>>>>>> 7790a3c2939e480fd7343ba522404c589673aeda
       </tbody>
     </table>
     </>

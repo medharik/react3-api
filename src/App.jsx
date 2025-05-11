@@ -15,6 +15,7 @@ import { useTheme } from "./components/ThemeProvider";
 
 function App() {
   const [produits, setProduits] = useState([]);
+  const [etatSup, setEtatSup] = useState(0);
   const libelleRef = useRef(null);
   const init = { id: "", libelle: "", prix: "" };
   const [produit, setProduit] = useState(init);
@@ -23,28 +24,28 @@ function App() {
   const [mc, setMc] = useState("");
   const [produitsAffiche, setProduitsAffiche] = useState([]);
 
-  const reducer_notice=(state,action)=>{
-switch(action.type){
-case "AJOUT":
-  return {texte:action.payload+' a ete ajoute avec succes',color:'success'} ;
-case "NEW":
-  return {texte:"Nouveau produit",color:'success'} ;
-case "MAJ":
-  return {texte:action.payload+' a ete modifie avec succes',color:'warning'} ;
-case "SUPPRESSION":
-  return {texte:'le produit ayant id ='+action.payload+' a ete SUPPRIME avec succes',color:'danger'} ;
-case "ERROR":
-  return {texte:action.payload, color:'danger'} ;
-case "EDIT":
-  return {...state, texte:'EDITION DU PRODUIT , id= '+action.payload.id+' libelle = '+action.payload.libelle} ;
-  default:
-    return state;
+  const reducer_notice = (state, action) => {
+    switch (action.type) {
+      case "AJOUT":
+        return { texte: action.payload + ' a ete ajoute avec succes', color: 'success' };
+      case "NEW":
+        return { texte: "Nouveau produit", color: 'success' };
+      case "MAJ":
+        return { texte: action.payload + ' a ete modifie avec succes', color: 'warning' };
+      case "SUPPRESSION":
+        return { texte: 'le produit ayant id =' + action.payload + ' a ete SUPPRIME avec succes', color: 'danger' };
+      case "ERROR":
+        return { texte: action.payload, color: 'danger' };
+      case "EDIT":
+        return { ...state, texte: 'EDITION DU PRODUIT , id= ' + action.payload.id + ' libelle = ' + action.payload.libelle };
+      default:
+        return state;
 
 
 
-}
+    }
   }
-  const [notice, dispatch_notice] = useReducer(reducer_notice,{texte:'liste des produits',color:'primary'} );
+  const [notice, dispatch_notice] = useReducer(reducer_notice, { texte: 'liste des produits', color: 'primary' });
 
   // notice (old) + dispatch action (ADD,DEDLETE) => la fonctio reduce se lance et nous retourne le new notice
 
@@ -52,29 +53,29 @@ case "EDIT":
     e.preventDefault();
     const ajouterApi = async (produit) => {
       try {
-        const form=new FormData();
-        form.append('libelle',produit.libelle); 
-        form.append('prix',produit.prix); 
-        if(produit.image)      form.append('image',produit.image); 
-            
-        const resp = await axios.post(URL, form,{
+        const form = new FormData();
+        form.append('libelle', produit.libelle);
+        form.append('prix', produit.prix);
+        if (produit.image) form.append('image', produit.image);
+
+        const resp = await axios.post(URL, form, {
           headers: {
             'Content-Type': 'multipart/form-data',
           }
-    
+
         });
         console.log("add", resp);
         setProduits([...produits, resp.data]);
-      setProduit(init);
-      dispatch_notice({type:"AJOUT",payload:produit.libelle});
+        setProduit(init);
+        dispatch_notice({ type: "AJOUT", payload: produit.libelle });
       } catch (error) {
-        dispatch_notice({type:'ERROR',payload:error.response.data.message});
+        dispatch_notice({ type: 'ERROR', payload: error.response.data.message });
         console.error("erreur add :", error);
       }
     };
     ajouterApi(produit);
-    
-      
+
+
 
     ;
     libelleRef.current.focus();
@@ -82,39 +83,52 @@ case "EDIT":
   };
   const supprimer = (id) => {
     if (confirm("supprimer?")) {
-      setProduits(produits.filter((p) => p.id !== id));
-     
+    //  setProduits(produits.filter((p) => p.id !== id));
+    setEtatSup(id);
+
       (async () => await supprimerApi(id))();
+
     }
-    dispatch_notice({type:"SUPPRESSION",payload:id})
+    dispatch_notice({ type: "SUPPRESSION", payload: id })
   };
   const editer = (produit) => {
     setProduit(produit);
-    dispatch_notice({type:"EDIT",payload:{id:produit.id,libelle:produit.libelle}});
+    dispatch_notice({ type: "EDIT", payload: { id: produit.id, libelle: produit.libelle } });
   };
   const modifier = (e) => {
     e.preventDefault();
     setProduits(produits.map((p) => (p.id === produit.id ? produit : p)));
     modifierApi(produit);
     setProduit(init);
-  //  dispatchNotice({type:"MODIFIER"})
-  dispatch_notice({type:"MAJ",payload:produit.libelle});
+    //  dispatchNotice({type:"MODIFIER"})
+    dispatch_notice({ type: "MAJ", payload: produit.libelle });
   };
-  const consulter = () => {};
+  const consulter = () => { };
   useEffect(() => {
     setLoading(true);
-   
-    const fetchData = async () => {
+
+    (async () => {
       setLoading(true);
       const data = await all();
       setLoading(false);
       setProduits(data);
       setProduitsAffiche(data);
 
-    };
-    fetchData();
+    })();
+
     // dispatch_notice()
   }, []);
+  useEffect(() => {
+  //  setLoading(true);
+
+    (async () => {
+     
+      setProduits(produits.filter(e=>e.id!==etatSup ));
+
+    })();
+console.log('suppression termine')
+    // dispatch_notice()
+  }, [etatSup]);
   useEffect(() => {
     setProduitsAffiche(
       produits.filter(
@@ -127,22 +141,22 @@ case "EDIT":
       )
     );
   }, [mc, produits]);
-const {theme,setTheme}=useTheme();
+  const { theme, setTheme } = useTheme();
   return (
     <>
-   <nav>
-   <div className=" d-flex justify-content-end p-1"><button onClick={()=>setTheme(theme==='primary'? 'dark':'primary')}>
-      
-      { theme==='primary'?  <i class="bi bi-lightbulb-fill"></i>:<i class="bi bi-lightbulb"></i>
-}
-    </button></div>
-   </nav>
+      <nav>
+        <div className=" d-flex justify-content-end p-1"><button onClick={() => setTheme(theme === 'primary' ? 'dark' : 'primary')}>
+
+          {theme === 'primary' ? <i class="bi bi-lightbulb-fill"></i> : <i class="bi bi-lightbulb"></i>
+          }
+        </button></div>
+      </nav>
       <div className="container text-center bg-light">
-      {/* <div className={`alert alert-${notice.color}`}>{notice.texte}</div> */}
+        {/* <div className={`alert alert-${notice.color}`}>{notice.texte}</div> */}
         {produit.id && (
-          <button onClick={() =>{setProduit(init);dispatch_notice({type:"NEW"})}}>Nouveau</button>
+          <button onClick={() => { setProduit(init); dispatch_notice({ type: "NEW" }) }}>Nouveau</button>
         )}
-<div className={'alert alert-'+notice.color}>{notice.texte}</div>
+        <div className={'alert alert-' + notice.color}>{notice.texte}</div>
         <Form
           libelleRef={libelleRef}
           produit={produit}
